@@ -1,0 +1,94 @@
+html,
+body {
+    margin: auto;
+    width: 100%;
+    font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", SimHei, "WenQuanYi Micro Hei", sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+ul,
+li {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+input {
+    font-size: inherit;
+}
+
+p {
+    margin: .4rem 0;
+    line-height: 1.4;
+}
+
+.inputLoaderWrapper {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.inputLoaderWrapper .loader {
+    top: 4rem;
+    left: 50%;
+}
+
+.wrapper,
+.tipWrapper,
+.errorWrapper,
+.btnWrapper {
+    text-align: center;
+    padding: 2rem .8rem;
+    color: #666;
+}
+
+
+.clearBtn {
+    position: relative;
+    display: block;
+    height: 0rem;
+    width: 0rem;
+    padding: .4rem;
+    margin: .1rem;
+    border: .3rem solid #ccc;
+    border-radius: 2rem;
+    background-color: #ccc;
+    box-shadow: 0 0 1px 1px #eee;
+}
+
+.clearBtn::before,
+.clearBtn::after {
+    height: 4px;
+    margin-top: -2px;
+}
+
+.clearBtn::before {
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.clearBtn::after {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.clearBtn::before,
+.clearBtn::after {
+    content: '';
+    position: absolute;
+    height: 2px;
+    width: 105%;
+    top: 50%;
+    left: 0;
+    margin-top: -1px;
+    background: #fff;
+}
