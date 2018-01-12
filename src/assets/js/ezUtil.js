@@ -19,11 +19,11 @@ var ezUtil = {
   },
 
   // 本地存储管理
-  localStorage: (function (params) {
+  localStorageMgr: (function (params) {
     // 配置
     var defaultOpt = {
-      max: 499,
-      lastestVersion: '0.1.0'
+      max: 300, // 储存容量上限
+      lastestVersion: '0.1.1' // 更新版本号以在旧用户的环境生效
     }
 
     var catalog = {
@@ -44,8 +44,9 @@ var ezUtil = {
       return catalog.data.indexOf(name)
     }
     function markItem (name, str) {
+      var item
       try {
-        var item = JSON.parse(localStorage.getItem('[catalog]'))
+        item = JSON.parse(localStorage.getItem('[catalog]'))
       } catch (e) { console.log(e) }
 
       // 不使用旧版本的数据
@@ -79,7 +80,7 @@ var ezUtil = {
     return {
       get: function (name) {
         var index = getItemIndex(name)
-        var res = {}
+        var res = null
         try {
           res = JSON.parse(localStorage.getItem('[data-' + index + ']'))
         } catch (e) { console.log(e) }

@@ -1,6 +1,6 @@
 export default {
   requestPrefix: {
-    words: 'http://dict.eazyc.info/php/words-cx.php',
-    search: 'http://dict.eazyc.info/php/search-cx.php'
+    words: 'http://dict.eazyc.info/php/words.php',
+    search: 'http://dict.eazyc.info/php/search.php'
   }
 }

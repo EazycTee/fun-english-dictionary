@@ -1,17 +1,22 @@
 <template>
   <div>
     <div class="tipWrapper">
-      <table>
+      <p class="title">tips</p>
+      <p>To enter an entry immediately, press <em>enter</em>/<em>return</em> after typing a whole word.</p>
+      <p>The <em class="star">*</em> (star) matches any character, which means <em class="star">*</em><em>ment</em> matches words ending with "ment".</p>
+      <!-- <table>
         <tbody>
           <tr>
             <th rowspan="2">tips</th>
+            <td>to enter an entry immediately, press <em>enter</em>/<em>return</em> after typing a whole word</td>
+          </tr>
+          <tr>
             <td>
-              the <em class="star">*</em> (star) matches any character
+              the <em class="star">*</em> (star) matches any character, which means <em class="star">*</em><em>ment</em> matches words ending with "ment"
             </td>
           </tr>
-          <tr><td>try pressing <em>enter</em>/<em>return</em> after typing</td></tr>
         </tbody>
-      </table>
+      </table> -->
     </div>
     <footer class="info">
       <table>
@@ -19,16 +24,10 @@
           <tr>
             <th>powered by</th>
             <td>
-              WordsAPI<br>
-              Vue.js<br>
-              axios<br>
+              WordsAPI<br>unirest<br>
+              Vue.js<br>axios<br>
               Loaders.css<br>
-              unirest
             </td>
-          </tr>
-          <tr>
-            <th>blog</th>
-            <td>www.eazyc.info</td>
           </tr>
         </tbody>
       </table>
@@ -57,8 +56,13 @@ em {
   font-weight: bold;
 }
 .tipWrapper {
-  margin: 2rem auto;
-  padding: 0;
+  font-size: .9rem;
+  margin: 1.2rem auto 1rem;
+  padding: 0 1.5rem;
+  /* text-align: left; */
+}
+.title {
+  font-weight: bold;
 }
 .info {
   /* margin-top: 1rem; */
@@ -76,7 +80,7 @@ table th, table td {
 table th {
   font-weight: bold;
   position: relative;
-  right: 2.5rem;
+  right: 1rem;
   padding-left: 3.5rem;
   text-align: right;
   width: 50%;
@@ -85,7 +89,7 @@ table th {
 table td {
   width: 60%;
   position: relative;
-  left: -1.5rem;
+  left: 0rem;
   text-align: left;
 }
 </style>

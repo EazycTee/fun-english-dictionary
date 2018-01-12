@@ -1,8 +1,8 @@
 {
-  "name": "vue-webpack-template",
+  "name": "ezDictionary",
   "version": "1.0.0",
-  "description": "A Vue.js project",
-  "author": "EazycTee <eazyc@ezMacAir.com>",
+  "description": "An English Dictionary",
+  "author": "eazyc <eazyc@qq.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -63,7 +63,6 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "0.0.31",
     "karma-webpack": "^2.0.2",
-    "loaders.css": "^0.1.2",
     "mocha": "^3.2.0",
     "nightwatch": "^0.9.12",
     "node-notifier": "^5.1.2",

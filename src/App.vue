@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="searchBar">
+    <div class="searchBar fixed">
       <div class="inputWrapper">
         <form @submit.prevent="goToWord"> 
           <input type="text" autofocus @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
@@ -14,7 +14,7 @@
 
 <script>
 import './assets/css/global.css'
-import 'loaders.css'
+import './assets/css/loaders-reduce.css'
 import router from './router'
 import ez from './assets/js/ezUtil'
 
@@ -80,14 +80,12 @@ export default {
 <style scoped>
 .searchBar {
   box-shadow: 0 0 1px 1px rgba(0,0,0,0.2);
-  border-bottom: #ddd;
   z-index: 9;
   width: 100%;
   padding: .4rem .8rem;
   margin: 0;
   box-sizing: border-box;
   background-color: #eee;
-  position: fixed;
   top: 0;
   left: 0;
 }

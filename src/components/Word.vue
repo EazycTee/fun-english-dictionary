@@ -32,7 +32,8 @@ export default {
       source: '',
       isGettingNewWord: false,
       isError: false,
-      errorMsg: ''
+      errorMsg: '',
+      axiosSource: axios.CancelToken.source()
     }
   },
   computed: {
@@ -45,53 +46,68 @@ export default {
     }
   },
   methods: {
-    searchWord () {
+    searchWord (kw) {
       let me = this
-      let source = ez.localStorage.get('[wd]' + me.kw)
-      if(!source) {
-        me.isGettingNewWord = true
-        axios.get(`${config.requestPrefix.words}?keyword=${me.kw}`)
+
+      // 取消上一次请求，更新 token
+      // me.axiosSource.cancel()
+      // me.axiosSource = axios.CancelToken.source()
+
+      // UI 渲染
+      me.isGettingNewWord = true
+      function refreshSource (source) {
+        if (source.results) {
+          me.source = source
+          me.isError = false
+          ez.scrollToTop()
+        } else {
+          handleError('word not found')
+        }
+        me.isGettingNewWord = false
+      }
+
+      // 错误处理
+      function handleError (msg) {
+        if(me.kw === kw) {
+          me.isError = true
+          me.errorMsg = msg
+        }
+      }
+      
+      // 尝试从 localStorage 获取数据，如果为空，发送 Ajax
+      let source = ez.localStorageMgr.get('[wd]' + kw)
+      if(source) {
+        refreshSource(source)
+      } else {
+        axios.get(`${config.requestPrefix.words}?keyword=${kw}`, { cancelToken: me.axiosSource.token })
           .then(function (res,b,c) {
-            if (res.status === 200 && res.data && res.data.results) { // 数据正常
-              me.source = res.data
-              me.isError = false
-              ez.localStorage.set('[wd]' + me.kw, res.data)
-            } else if (res.data && !res.data.results && res.data.word) {
-              console.log(res.message)
-              me.isError = true
-              me.errorMsg = 'word not found'
+            if (res.status === 200 && res.data && res.data.word) { // 数据正常
+              ez.localStorageMgr.set('[wd]' + kw, res.data)
+              if(me.kw === kw) {
+                refreshSource(res.data)
+              }
             } else if (res.data && res.data.success === false) {
-              console.log(res.message)
-              me.isError = true
-              me.errorMsg = 'word not found'
+              handleError('word not found')
             } else {
-              me.isError = true
-              me.errorMsg = 'Sorry, some bad things happened here, just try again later...'
+            handleError('Sorry, there\'s something wrong with the server, just try again later...')
             }
           }).catch(function (e) {
             console.log(e)
-            me.isError = true
-            me.errorMsg = 'Sorry, there\'s something wrong here, just try again later...'
-          }).then(function () {
-            me.isGettingNewWord = false
+            handleError('Sorry, there\'s something wrong with the server, just try again later :(')
           })
-      } else {
-        me.source = source
-        me.isError = false
       }
     }
   },
   mounted: function () {
     let me = this
-    me.searchWord()
+    me.searchWord(me.kw)
   },
   watch: {
     // 路由变化不会触发 Vue 实例的生命周期钩子，此处对路由变化作出响应
     $route (to, from) {
       let me = this
-      me.searchWord()
+      me.searchWord(me.kw)
       me.isError = false
-      ez.scrollToTop()
     }
   }
 }

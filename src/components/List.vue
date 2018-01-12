@@ -1,6 +1,6 @@
 <template>
   <div id="listWrapper" class="list">
-    <div class="inputLoaderWrapper" v-show="isUiRefreshing && currentPage === 1">
+    <div class="inputLoaderWrapper" v-show="isRefreshingList && currentPage === 1">
       <div class="loader pacman">
         <div></div>
         <div></div>
@@ -16,7 +16,7 @@
       {{ errorMsg }}
     </div>
     <div v-show="isAllIn && !isUnusualNew" class="wrapper msg">there's nothing more</div>
-    <div v-show="!isUiRefreshing && !isAllIn" class="wrapper bottomWrapper">
+    <div v-show="!isAllIn && !isUnusualNew && total > 0" class="wrapper bottomWrapper">
       <div v-show="isLoadingMore" class="loader pacman">
         <div></div>
         <div></div>
@@ -47,7 +47,7 @@ export default {
       isUnusualNew: false,
       isUnusualMore: false,
       errorMsg: '',
-      isUiRefreshing: true,
+      isRefreshingList: true,
       isLoadingMore: false,
       isAllIn: false,
       total: 0,
@@ -85,16 +85,16 @@ export default {
       me.currentPage = 1
 
       // 取消上一次请求，更新 token
-      me.axiosSource.cancel()
-      me.axiosSource = axios.CancelToken.source()
+      // me.axiosSource.cancel()
+      // me.axiosSource = axios.CancelToken.source()
 
       // UI 渲染
-      me.isUiRefreshing = true
-      function refreshUi (data) {
+      me.isRefreshingList = true
+      function refreshList (data) {
         if (!me.isUnusualNew) {
           me.wordList = data.results.data
         }
-        me.isUiRefreshing = false
+        me.isRefreshingList = false
         ez.scrollToTop()
         me.checkAllIn()
       }
@@ -103,7 +103,7 @@ export default {
       function handleData (data) {
         let total = me.total = data.results.total
         if (total > 0) { // 有词条
-          refreshUi(data)
+          refreshList(data)
           me.isUnusualNew = false
         } else {
           handleError('words not found')
@@ -112,13 +112,15 @@ export default {
 
       // 错误处理
       function handleError (msg) {
-        me.isUnusualNew = true
-        me.errorMsg = msg
-        refreshUi()
+        if (me.kw === kw) {
+          me.isUnusualNew = true
+          me.errorMsg = msg
+          refreshList()
+        }
       }
 
       // 尝试从 localStorage 获取数据，如果为空，发送 Ajax
-      let data = ez.localStorage.get('[wl-p1]' + me.kw)
+      let data = ez.localStorageMgr.get('[wl-p1]' + me.kw)
       if (data) {
         handleData(data)
       } else {
@@ -126,12 +128,12 @@ export default {
           .then(function (res) {
             var data = res.data
             if (res.status === 200 && data && data.results && data.results.data && data.results.total > -1) { // 数据正常
-              ez.localStorage.set('[wl-p1]' + kw, data)
+              ez.localStorageMgr.set('[wl-p1]' + kw, data)
               if (me.kw === kw) {
                 handleData(data)
               }
             } else {
-              handleError('Sorry, there\'s something wrong here, just try again later...')
+              handleError('Sorry, there\'s something wrong with the server, just try again later...')
             }
           })
           .catch(function(thrown) {
@@ -152,7 +154,7 @@ export default {
 
       // UI 渲染
       me.isLoadingMore = true
-      function updataUi (data) {
+      function updateList (data) {
         if (!me.isUnusualMore) {
           me.wordList = me.wordList.concat(data.results.data)
         }
@@ -163,7 +165,7 @@ export default {
       // 数据处理
       function handleData (data) {
         me.isUnusualMore = false
-        updataUi(data)
+        updateList(data)
       }
 
       // 错误处理
@@ -171,7 +173,7 @@ export default {
         me.currentPage -= 1
         me.isUnusualMore = true
         me.errorMsg = msg
-        updataUi()
+        updateList()
       }
       
       // 获取数据
