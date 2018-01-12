@@ -60,18 +60,17 @@ export default {
           me.source = source
           me.isError = false
           ez.scrollToTop()
+          me.isGettingNewWord = false
         } else {
           handleError('word not found')
         }
-        me.isGettingNewWord = false
       }
 
       // 错误处理
       function handleError (msg) {
-        if(me.kw === kw) {
-          me.isError = true
-          me.errorMsg = msg
-        }
+        me.isError = true
+        me.errorMsg = msg
+        me.isGettingNewWord = false
       }
       
       // 尝试从 localStorage 获取数据，如果为空，发送 Ajax
@@ -81,19 +80,25 @@ export default {
       } else {
         axios.get(`${config.requestPrefix.words}?keyword=${kw}`, { cancelToken: me.axiosSource.token })
           .then(function (res,b,c) {
-            if (res.status === 200 && res.data && res.data.word) { // 数据正常
-              ez.localStorageMgr.set('[wd]' + kw, res.data)
-              if(me.kw === kw) {
+            if(me.kw === kw) {
+              if (res.status === 200 && res.data && res.data.word) { // 数据正常
+                ez.localStorageMgr.set('[wd]' + kw, res.data)
                 refreshSource(res.data)
+              } else if (res.data && res.data.success === false) {
+                handleError('word not found')
+              } else {
+                handleError('Sorry, there\'s something wrong with the server, just try again later...')
               }
-            } else if (res.data && res.data.success === false) {
-              handleError('word not found')
             } else {
-            handleError('Sorry, there\'s something wrong with the server, just try again later...')
+              if (res.status === 200 && res.data && res.data.word) { // 数据正常
+                ez.localStorageMgr.set('[wd]' + kw, res.data)
+              }
             }
           }).catch(function (e) {
             console.log(e)
-            handleError('Sorry, there\'s something wrong with the server, just try again later :(')
+            if(me.kw === kw) {
+              handleError('Sorry, there\'s something wrong with the server, just try again later :(')
+            }
           })
       }
     }
