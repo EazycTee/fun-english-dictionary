@@ -1,20 +1,23 @@
 <template>
   <div id="app">
     <div class="searchBar fixed">
-      <div class="inputWrapper">
-        <form @submit.prevent="goToWord"> 
-          <input type="text" autofocus @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
-          <div class="clearBtn" @click="goHome" v-show="!!keyword"></div>
-        </form>
+      <div class="fixedInner">
+        <div class="inputWrapper">
+          <form @submit.prevent="goToWord"> 
+            <input type="text" autofocus @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
+            <div class="clearBtn" @click="goHome" v-show="!!keyword"></div>
+          </form>
+        </div>
       </div>
     </div>
-    <router-view class="routerView" />
+    <router-view class="routerView main" />
   </div>
 </template>
 
 <script>
 import './assets/css/global.css'
 import './assets/css/loaders-reduce.css'
+import 'promise-polyfill/src/polyfill'
 import router from './router'
 import ez from './assets/js/ezUtil'
 
@@ -56,10 +59,10 @@ export default {
     },
     goToWord () {
       let me = this
-      if (me.keyword.trim().indexOf('*') === -1) { // 用户输入不含'*'
+      if (me.keyword && me.keyword.trim().indexOf('*') === -1 && me.keyword.trim() !== '') { // 用户输入不含'*'
         clearTimeout(me.handleInput())
         router.push('/word/' + me.keywordEncoded)
-      } else { // 用户输入含'*'
+      } else { // 用户输入含'*'，或者未输入
         return
       }
     }

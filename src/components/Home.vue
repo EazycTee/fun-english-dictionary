@@ -45,7 +45,7 @@ em {
   font-size: .9rem;
   margin-top: 1rem;
   padding: 0;
-  color: #ccc;
+  color: #999;
 }
 table {
   width: 100%;
