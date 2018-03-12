@@ -1,6 +1,6 @@
 <template>
   <div id="listWrapper" class="list">
-    <div class="inputLoaderWrapper fixed" v-show="isRefreshingList && currentPage === 1">
+    <div class="inputLoaderWrapper" v-show="isRefreshingList && currentPage === 1">
       <div class="loader pacman">
         <div></div>
         <div></div>
@@ -17,15 +17,15 @@
     </div>
     <div v-show="isAllIn && !isUnusualNew" class="wrapper msg">there's nothing more</div>
     <div v-show="!isAllIn && !isUnusualNew && total > 0" class="wrapper bottomWrapper">
-      <div v-show="isUnusualMore" class="error">
-        {{ errorMsg }}
-      </div>
       <div v-show="isLoadingMore" class="loader pacman">
         <div></div>
         <div></div>
         <div></div>
         <div></div>
         <div></div>
+      </div>
+      <div v-show="isUnusualMore" class="error">
+        {{ errorMsg }}
       </div>
       <div v-show="!isLoadingMore" class="loadMore" @click="loadMore">more...</div>
     </div>
@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     kw () {
-      return this.$route.params.keyword ? this.$route.params.keyword.toLowerCase() : ''
+      return this.$route.params.keyword.toLowerCase()
     },
     requestUrl () {
       let me = this
@@ -83,20 +83,27 @@ export default {
     newList (kw) {
       let me = this
       me.currentPage = 1
-      me.isRefreshingList = true
 
       // 取消上一次请求，更新 token
       // me.axiosSource.cancel()
       // me.axiosSource = axios.CancelToken.source()
 
+      // UI 渲染
+      me.isRefreshingList = true
+      function refreshList (data) {
+        if (!me.isUnusualNew) {
+          me.wordList = data.results.data
+        }
+        me.isRefreshingList = false
+        ez.scrollToTop()
+        me.checkAllIn()
+      }
+
       // 数据处理
       function handleData (data) {
         let total = me.total = data.results.total
         if (total > 0) { // 有词条
-          me.wordList = data.results.data
-          ez.scrollToTop()
-          me.checkAllIn()
-          me.isRefreshingList = false
+          refreshList(data)
           me.isUnusualNew = false
         } else {
           handleError('words not found')
@@ -105,9 +112,11 @@ export default {
 
       // 错误处理
       function handleError (msg) {
-        me.errorMsg = msg
-        me.isUnusualNew = true
-        me.isRefreshingList = false
+        if (me.kw === kw) {
+          me.isUnusualNew = true
+          me.errorMsg = msg
+          refreshList()
+        }
       }
 
       // 尝试从 localStorage 获取数据，如果为空，发送 Ajax
@@ -117,26 +126,22 @@ export default {
       } else {
         axios.get(me.requestUrl, { cancelToken: me.axiosSource.token })
           .then(function (res) {
-            let data = res.data
-            if (me.kw === kw) { // 当请求的关键字与当前关键字相同时
-              if (res.status === 200 && data && data.results && data.results.data && data.results.total > -1) { // 数据正常
-                ez.localStorageMgr.set('[wl-p1]' + kw, data)
-                if (me.kw === kw) {
-                  handleData(data)
-                }
-              } else {
-                handleError('Sorry, there\'s something wrong with the server, just try again later...')
+            var data = res.data
+            if (res.status === 200 && data && data.results && data.results.data && data.results.total > -1) { // 数据正常
+              ez.localStorageMgr.set('[wl-p1]' + kw, data)
+              if (me.kw === kw) {
+                handleData(data)
               }
             } else {
-              if (res.status === 200 && data && data.results && data.results.data && data.results.total > -1) { // 数据正常
-                ez.localStorageMgr.set('[wl-p1]' + kw, data)
-              }
+              handleError('Sorry, there\'s something wrong with the server, just try again later...')
             }
           })
           .catch(function(thrown) {
             console.log(thrown)
-            if (me.kw === kw) {
-              handleError('Sorry, there\'s something wrong with the server,, just try again later :(')
+            if (axios.isCancel(thrown)) {
+              console.log('Request canceled', thrown.message);
+            } else {
+              handleError('Sorry, there\'s something wrong here, just try again later :(')
             }
           })
       }
@@ -146,22 +151,29 @@ export default {
     loadMore () {
       let me = this
       me.currentPage += 1
+
+      // UI 渲染
       me.isLoadingMore = true
+      function updateList (data) {
+        if (!me.isUnusualMore) {
+          me.wordList = me.wordList.concat(data.results.data)
+        }
+        me.isLoadingMore = false
+        me.checkAllIn()
+      }
 
       // 数据处理
       function handleData (data) {
-        me.wordList = me.wordList.concat(data.results.data)
-        me.checkAllIn()
         me.isUnusualMore = false
-        me.isLoadingMore = false
+        updateList(data)
       }
 
       // 错误处理
       function handleError (msg) {
-        me.errorMsg = msg
-        me.isUnusualMore = true
-        me.isLoadingMore = false
         me.currentPage -= 1
+        me.isUnusualMore = true
+        me.errorMsg = msg
+        updateList()
       }
       
       // 获取数据
@@ -172,11 +184,11 @@ export default {
           if (res.status === 200 && data && data.results && data.results.data && data.results.total > -1) { // 数据正常
             handleData(data)
           } else {
-            handleError('Sorry, there\'s something wrong with the server, just try again later...')
+            handleError('Sorry, there\'s something wrong here, just try again later...')
           }
         })
         .catch(function(thrown) {
-          handleError('Sorry, there\'s something wrong with the server, just try again later :(')
+          handleError('Sorry, there\'s something wrong here, just try again later :(')
         })
     },
     handleClickWord (wordEncoded) {
@@ -214,7 +226,6 @@ li:first-of-type {
   position: relative;
   height: 3rem;
   width: 3rem;
-  border: 1px solid transparent;
 }
 .bottomWrapper .loader>div {
   background-color: #ccc;

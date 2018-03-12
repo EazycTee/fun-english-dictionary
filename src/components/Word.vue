@@ -42,24 +42,24 @@ export default {
       return `height: ${height}px`
     },
     kw () {
-      return this.$route.params.keyword ? this.$route.params.keyword.toLowerCase() : ''
+      return this.$route.params.keyword.toLowerCase()
     }
   },
   methods: {
     searchWord (kw) {
       let me = this
-      me.isGettingNewWord = true
 
       // 取消上一次请求，更新 token
       // me.axiosSource.cancel()
       // me.axiosSource = axios.CancelToken.source()
 
       // UI 渲染
+      me.isGettingNewWord = true
       function refreshSource (source) {
         if (source.results) {
-          ez.scrollToTop()
           me.source = source
           me.isError = false
+          ez.scrollToTop()
           me.isGettingNewWord = false
         } else {
           handleError('word not found')
@@ -80,7 +80,7 @@ export default {
       } else {
         axios.get(`${config.requestPrefix.words}?keyword=${kw}`, { cancelToken: me.axiosSource.token })
           .then(function (res,b,c) {
-            if(me.kw === kw) { // 当请求的关键字与当前关键字相同时
+            if(me.kw === kw) {
               if (res.status === 200 && res.data && res.data.word) { // 数据正常
                 ez.localStorageMgr.set('[wd]' + kw, res.data)
                 refreshSource(res.data)
@@ -112,6 +112,7 @@ export default {
     $route (to, from) {
       let me = this
       me.searchWord(me.kw)
+      me.isError = false
     }
   }
 }
