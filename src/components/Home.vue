@@ -1,12 +1,16 @@
 <template>
   <div>
     <div class="tips">
+      <p class="title">提示</p>
+      <p>输入 <em class="star">*</em><em>ment</em> 将会列出以 "ment" 结尾的单词，也就是说通过星号 <em class="star">*</em> 可以通配搜索</p>
+      <p>在输入一个单词后按<em>回车</em>/<em>换行</em>即可进入对应词条</p>
       <p class="title">tips</p>
-      <p>To enter an entry immediately, press <em>enter</em>/<em>return</em> after typing a whole word.</p>
-      <p>The <em class="star">*</em> (star) matches any character, which means <em class="star">*</em><em>ment</em> matches words ending with "ment".</p>
+      <p>typing in <em class="star">*</em><em>ment</em> will list words ending with "ment", which means the star <em class="star">*</em> can match any character(s) </p>
+      <p>to enter an entry immediately, press <em>enter</em>/<em>return</em> after typing a whole word</p>
     </div>
     <footer class="info"> 
-      <span>powered by</span> <a href="https://www.wordsapi.com/" target="_blank">WordsAPI</a>
+      <span>powered by <a href="https://www.wordsapi.com/" target="_blank">WordsAPI</a></span>&nbsp;
+      <span>&copy; 2018 <a href="http://www.eazyc.info/" target="_blank">eazyc</a></span>
     </footer>
   </div>
 </template>
@@ -33,6 +37,10 @@ em {
 }
 .title {
   font-weight: bold;
+  margin-top: 1rem;
+}
+.title:first-child {
+  margin-top: 0rem;
 }
 .tips {
   font-size: .9rem;
@@ -43,9 +51,9 @@ em {
 .info {
   text-align: center;
   font-size: .9rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   padding: 0;
-  color: #ccc;
+  color: #999;
 }
 table {
   width: 100%;

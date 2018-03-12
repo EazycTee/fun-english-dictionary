@@ -3,7 +3,7 @@
     <div class="searchBar fixed">
       <div class="inputWrapper">
         <form @submit.prevent="goToWord"> 
-          <input type="text" autofocus @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
+          <input type="text" @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
           <div class="clearBtn" @click="goHome" v-show="!!keyword"></div>
         </form>
       </div>

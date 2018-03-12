@@ -20,7 +20,7 @@
 import axios from 'axios'
 import ez from '../assets/js/ezUtil.js'
 import descriptions from './Descriptions.vue'
-import config from '../assets/js/config.js'
+import config from '../assets/js/config.ez.js'
 
 export default {
   name: 'word',
