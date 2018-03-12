@@ -185,6 +185,16 @@ export default {
   },
   mounted () {
     this.newList(this.kw)
+    // // 获取表单
+    // var form = cx.StandardPost('http://dict.eazyc.info/php/search-cx.ez.php', {
+    //     keyword: '^a.*$',
+    //     page: '1'
+    // });
+
+    // //请求数据 
+    // cx.submitData(form, function() {
+    //   console.log(1)
+    // });
   },
   watch: {
     // 路由变化不会触发 Vue 实例的生命周期钩子，此处对路由变化作出响应
@@ -197,13 +207,13 @@ export default {
 
 <style scoped>
 li {
-  padding: .8rem;
+  padding: 0.8rem;
   text-align: left;
   border-bottom: 1px solid #ddd;
   margin: 0 1rem;
 }
 li:first-of-type {
-  margin-top: .2rem;
+  margin-top: 0.2rem;
 }
 .bottomWrapper {
   position: relative;
@@ -216,11 +226,12 @@ li:first-of-type {
   width: 3rem;
   border: 1px solid transparent;
 }
-.bottomWrapper .loader>div {
+.bottomWrapper .loader > div {
   background-color: #ccc;
   border-color: #ccc;
 }
-.pacman > div:first-of-type, .pacman > div:nth-child(2) {
+.pacman > div:first-of-type,
+.pacman > div:nth-child(2) {
   border-right-color: transparent;
   background-color: transparent;
 }

@@ -1,113 +1,204 @@
 <template>
   <div id="app">
     <div class="searchBar fixed">
-      <div class="fixedInner">
+      <div class="fixedInner" :class="{ active : isStar }">
         <div class="inputWrapper">
           <form @submit.prevent="goToWord"> 
-            <input type="text" autofocus @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
+            <input type="text" @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
             <div class="clearBtn" @click="goHome" v-show="!!keyword"></div>
           </form>
         </div>
+        <div class="starFive" :class="{active : isPageWord, disabled : !isPageWord, toNarrowDown : toNarrowDown, toWiden: toWiden}" @click="handleStar"></div>
       </div>
+      <div class="starFiveBg" :class="{active : isStar}">★</div>
     </div>
     <router-view class="routerView main" />
   </div>
 </template>
 
 <script>
-import './assets/css/global.css'
-import './assets/css/loaders-reduce.css'
-import 'promise-polyfill/src/polyfill'
-import router from './router'
-import ez from './assets/js/ezUtil'
+import "./assets/css/global.css";
+import "./assets/css/loaders-reduce.css";
+import "promise-polyfill/src/polyfill";
+import router from "./router";
+import ez from "./assets/js/ezUtil";
 
 export default {
-  name: 'app',
-  data () {
+  name: "app",
+  data() {
     return {
-      keyword: this.$route.params.keyword || ''
-    }
+      keyword: this.$route.params.keyword || "",
+      isStar: false,
+      toNarrowDown: false,
+      toWiden: false
+    };
   },
   computed: {
-    keywordEncoded () {
-      let str = this.keyword || ''
-      return encodeURIComponent(str.trim())
+    isPageWord() {
+      let me = this;
+      return me.$route.name === "word";
+    },
+    keywordEncoded() {
+      let str = this.keyword || "";
+      return encodeURIComponent(str.trim());
     }
   },
   methods: {
-    handleFocus () {
-      let me = this
-      if (router.history.current.name !== 'list') {
-        me.goTo()
-        ez.scrollToTop()
+    handleStar() {
+      let me = this;
+      me.isStar = !me.isStar;
+    },
+    handleFocus() {
+      let me = this;
+      if (router.history.current.name !== "list") {
+        me.goTo();
+        ez.scrollToTop();
       }
     },
-    handleInput: ez.debounce(300, function () {
-      let me = this
-      me.goTo()
+    handleInput: ez.debounce(300, function() {
+      let me = this;
+      me.goTo();
     }),
-    goHome () {
-      router.push('/')
+    goHome() {
+      router.push("/");
     },
-    goTo () {
-      let me = this
-      if (me.keywordEncoded === '') {
-        router.push('/')
+    goTo() {
+      let me = this;
+      if (me.keywordEncoded === "") {
+        router.push("/");
       } else {
-        router.push('/list/' + me.keywordEncoded)
+        router.push("/list/" + me.keywordEncoded);
       }
     },
-    goToWord () {
-      let me = this
-      if (me.keyword && me.keyword.trim().indexOf('*') === -1 && me.keyword.trim() !== '') { // 用户输入不含'*'
-        clearTimeout(me.handleInput())
-        router.push('/word/' + me.keywordEncoded)
-      } else { // 用户输入含'*'，或者未输入
-        return
+    goToWord() {
+      let me = this;
+      if (
+        me.keyword &&
+        me.keyword.trim().indexOf("*") === -1 &&
+        me.keyword.trim() !== ""
+      ) {
+        // 用户输入不含'*'
+        clearTimeout(me.handleInput());
+        router.push("/word/" + me.keywordEncoded);
+      } else {
+        // 用户输入含'*'，或者未输入
+        return;
       }
     }
   },
-  mounted () {
-    console.log('app mounted')
+  mounted() {
+    console.log("app mounted");
   },
   watch: {
     // 路由变化不会触发 Vue 实例的生命周期钩子，此处对路由变化作出响应
-    $route (to, from) {
-      let me = this
-      me.keyword = me.$route.params.keyword
+    $route(to, from) {
+      let me = this;
+
+      me.keyword = me.$route.params.keyword;
+
+      // star animation control
+      var showStarPages = ['word']
+      me.toWiden = me.$route.name === 'word';
+      if(showStarPages.indexOf(from.name) > -1 && showStarPages.indexOf(to.name) === -1) {
+        me.toWiden = false;
+        me.toNarrowDown = !me.toWiden;
+      } else if(showStarPages.indexOf(from.name) === -1 && showStarPages.indexOf(to.name) > -1) {
+        me.toWiden = true;
+        me.toNarrowDown = !me.toWiden;
+      }
     }
   }
-}
+};
 </script>
 
 <style scoped>
 .searchBar {
-  box-shadow: 0 0 1px 1px rgba(0,0,0,0.2);
+  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
   z-index: 9;
   width: 100%;
-  padding: .4rem .8rem;
+  padding: 0.4rem 0.8rem;
   margin: 0;
   box-sizing: border-box;
   background-color: #eee;
   top: 0;
   left: 0;
 }
+.fixedInner {
+  height: 2.2rem;
+  display: flex;
+  justify-content: space-between;
+  z-index: 1;
+  position: relative;
+}
+.starFive,
+.starFiveBg {
+  color: #ccc;
+  text-align: right;
+  font-size: 1.6rem;
+  font-family: serif;
+  cursor: default;
+  line-height: 2.2rem;
+  height: 2.2rem;
+  width: 2.2rem;
+  border: 1px solid transparent;
+}
+.starFive {
+  width: 0;
+  color: transparent;
+}
+.starFive.active {
+  width: 2.2rem;
+}
+.starFive.disabled {
+  width: 0rem;
+}
+.toNarrowDown {
+  animation: narrowDown 0.3s;
+}
+.toWiden {
+  animation: widen 0.3s;
+}
+@keyframes narrowDown {
+  0% {
+    width: 2.2rem;
+  }
+  100% {
+    width: 0rem;
+  }
+}
+@keyframes widen {
+  0% {
+    width: 0rem;
+  }
+  100% {
+    width: 2.2rem;
+  }
+}
+.starFiveBg {
+  position: absolute;
+  right: 0.8rem;
+  top: 0.4rem;
+}
+.starFiveBg.active {
+  color: #f99;
+}
 .inputWrapper {
   width: 100%;
   display: block;
-  padding: .3rem 1rem;
+  padding: 0.3rem 1rem;
   margin: 0;
   border-radius: 2rem;
   box-shadow: inset 1px 1px 1px 1px #eee;
   border: 1px solid #ddd;
   box-sizing: border-box;
   background-color: #fff;
-  position: relative;
+  flex: 1;
 }
 form {
   position: relative;
 }
-form, input {
+form,
+input {
   border: none;
   width: 100%;
   padding: 0;
@@ -118,7 +209,7 @@ input {
   font-size: 1.2rem;
   line-height: 1.6rem;
   height: 1.6rem;
-  padding: 0 1.5rem 0 .2rem;
+  padding: 0 1.5rem 0 0.2rem;
   box-sizing: border-box;
 }
 input:focus {
@@ -131,9 +222,9 @@ input:focus {
   bottom: 0;
   height: 0rem;
   width: 0rem;
-  padding: .4rem;
-  margin: .1rem;
-  border-width: .3rem;
+  padding: 0.4rem;
+  margin: 0.1rem;
+  border-width: 0.3rem;
 }
 .routerView {
   padding-top: 2.9rem;
