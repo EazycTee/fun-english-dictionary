@@ -7,7 +7,6 @@
           <div class="clearBtn" @click="goHome" v-show="!!keyword"></div>
         </form>
       </div>
-      <div class="starFiveBg" :class="{active : isStar}">★</div>
     </div>
     <router-view class="routerView" />
   </div>
@@ -23,27 +22,16 @@ export default {
   name: "app",
   data() {
     return {
-      keyword: this.$route.params.keyword || "",
-      isStar: false,
-      toNarrowDown: false,
-      toWiden: false
+      keyword: this.$route.params.keyword || ""
     };
   },
   computed: {
-    isPageWord() {
-      let me = this;
-      return me.$route.name === "word";
-    },
     keywordEncoded() {
       let str = this.keyword || "";
       return encodeURIComponent(str.trim());
     }
   },
   methods: {
-    handleStar() {
-      let me = this;
-      me.isStar = !me.isStar;
-    },
     handleFocus() {
       let me = this;
       if (router.history.current.name !== "list") {
@@ -83,19 +71,7 @@ export default {
     // 路由变化不会触发 Vue 实例的生命周期钩子，此处对路由变化作出响应
     $route(to, from) {
       let me = this;
-
       me.keyword = me.$route.params.keyword;
-
-      // star animation control
-      var showStarPages = ['word']
-      me.toWiden = me.$route.name === 'word';
-      if(showStarPages.indexOf(from.name) > -1 && showStarPages.indexOf(to.name) === -1) {
-        me.toWiden = false;
-        me.toNarrowDown = !me.toWiden;
-      } else if(showStarPages.indexOf(from.name) === -1 && showStarPages.indexOf(to.name) > -1) {
-        me.toWiden = true;
-        me.toNarrowDown = !me.toWiden;
-      }
     }
   }
 };
@@ -116,61 +92,8 @@ export default {
 .fixedInner {
   height: 2.2rem;
   display: flex;
-  justify-content: space-between;
   z-index: 1;
   position: relative;
-}
-.starFive,
-.starFiveBg {
-  color: #ccc;
-  text-align: right;
-  font-size: 1.6rem;
-  font-family: serif;
-  cursor: default;
-  line-height: 2.2rem;
-  height: 2.2rem;
-  width: 2.2rem;
-  border: 1px solid transparent;
-}
-.starFive {
-  width: 0;
-  color: transparent;
-}
-.starFive.active {
-  width: 2.2rem;
-}
-.starFive.disabled {
-  width: 0rem;
-}
-.toNarrowDown {
-  animation: narrowDown 0.3s;
-}
-.toWiden {
-  animation: widen 0.3s;
-}
-@keyframes narrowDown {
-  0% {
-    width: 2.2rem;
-  }
-  100% {
-    width: 0rem;
-  }
-}
-@keyframes widen {
-  0% {
-    width: 0rem;
-  }
-  100% {
-    width: 2.2rem;
-  }
-}
-.starFiveBg {
-  position: absolute;
-  right: 0.8rem;
-  top: 0.4rem;
-}
-.starFiveBg.active {
-  color: #f99;
 }
 .inputWrapper {
   width: 100%;
