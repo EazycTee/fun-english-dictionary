@@ -1,14 +1,14 @@
 <template>
   <div id="app">
     <div class="searchBar fixed">
-      <div class="inputWrapper">
+      <div class="inputWrapper fixedInner">
         <form @submit.prevent="goToWord"> 
           <input type="text" @focus="handleFocus" @input="handleInput" v-model="keyword" icon="ios-clock-outline" placeholder="word to search...">
           <div class="clearBtn" @click="goHome" v-show="!!keyword"></div>
         </form>
       </div>
     </div>
-    <router-view class="routerView" />
+    <router-view class="routerView main " />
   </div>
 </template>
 
@@ -36,7 +36,7 @@ export default {
       let me = this;
       if (router.history.current.name !== "list") {
         me.goTo();
-        ez.scrollToTop();
+        // ez.scrollToTop();
       }
     },
     handleInput: ez.debounce(300, function() {
@@ -89,17 +89,10 @@ export default {
   top: 0;
   left: 0;
 }
-.fixedInner {
-  height: 2.2rem;
-  display: flex;
-  z-index: 1;
-  position: relative;
-}
 .inputWrapper {
   width: 100%;
   display: block;
   padding: 0.3rem 1rem;
-  margin: 0;
   border-radius: 2rem;
   box-shadow: inset 1px 1px 1px 1px #eee;
   border: 1px solid #ddd;

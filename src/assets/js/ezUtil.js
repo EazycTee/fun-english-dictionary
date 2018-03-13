@@ -18,11 +18,27 @@ var ezUtil = {
     return debouncer
   },
 
-  // 本地存储管理
+  // 本地存储
+  localStorage: {
+    getJSON: function (name) {
+      var item
+      try {
+        item = JSON.parse(localStorage.getItem(name))
+      } catch (e) { console.log(e) }
+      return item
+    },
+    setJSON: function (name, obj) {
+      try {
+        localStorage.setItem(name, JSON.stringify(obj))
+      } catch (e) { console.log(e) }
+    }
+  },
+
+  // 本地存储管理 (有容量上限)
   localStorageMgr: (function (params) {
     // 配置
     var defaultOpt = {
-      max: 300, // 储存容量上限
+      max: 300, // 储存容量上限 (条)
       lastestVersion: '0.1.1' // 更新版本号以在旧用户的环境生效
     }
 
@@ -78,7 +94,7 @@ var ezUtil = {
 
     // 接口暴露
     return {
-      get: function (name) {
+      getJSON: function (name) {
         var index = getItemIndex(name)
         var res = null
         try {
@@ -86,7 +102,7 @@ var ezUtil = {
         } catch (e) { console.log(e) }
         return res
       },
-      set: function (name, obj) {
+      setJSON: function (name, obj) {
         var str = ''
         try {
           str = JSON.stringify(obj)

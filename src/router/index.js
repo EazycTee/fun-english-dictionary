@@ -23,5 +23,16 @@ export default new Router({
       name: 'word',
       component: Word
     }
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    // console.log(to)
+    // console.log(from)
+    // console.log(savedPosition)
+    // return 期望滚动到哪个的位置
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  }
 })

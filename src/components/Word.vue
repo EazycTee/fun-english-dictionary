@@ -1,6 +1,6 @@
 <template>
   <div id="wordWrapper" class="word">
-    <div class="inputLoaderWrapper" v-show="isGettingNewWord">
+    <div class="inputLoaderWrapper fixed" v-show="isGettingNewWord">
       <div class="loader ball-scale-multiple">
         <div></div>
         <div></div>
@@ -59,8 +59,16 @@ export default {
         if (source.results) {
           me.source = source
           me.isError = false
-          ez.scrollToTop()
+          // ez.scrollToTop()
           me.isGettingNewWord = false
+
+          // 更新历史记录
+          var historyLength = config.historyLength
+          var history = ez.localStorage.getJSON("history") || []
+          history = history.length > length ? history.slice(length,) : history
+          history.indexOf(me.kw) >= 0 && history.splice(history.indexOf(me.kw), 1)
+          history.unshift(me.kw)
+          ez.localStorage.setJSON('history', history)
         } else {
           handleError('word not found')
         }
@@ -74,7 +82,7 @@ export default {
       }
       
       // 尝试从 localStorage 获取数据，如果为空，发送 Ajax
-      let source = ez.localStorageMgr.get('[wd]' + kw)
+      let source = ez.localStorageMgr.getJSON('[wd]' + kw)
       if(source) {
         refreshSource(source)
       } else {
@@ -82,7 +90,7 @@ export default {
           .then(function (res,b,c) {
             if(me.kw === kw) {
               if (res.status === 200 && res.data && res.data.word) { // 数据正常
-                ez.localStorageMgr.set('[wd]' + kw, res.data)
+                ez.localStorageMgr.setJSON('[wd]' + kw, res.data)
                 refreshSource(res.data)
               } else if (res.data && res.data.success === false) {
                 handleError('word not found')
@@ -91,7 +99,7 @@ export default {
               }
             } else {
               if (res.status === 200 && res.data && res.data.word) { // 数据正常
-                ez.localStorageMgr.set('[wd]' + kw, res.data)
+                ez.localStorageMgr.setJSON('[wd]' + kw, res.data)
               }
             }
           }).catch(function (e) {

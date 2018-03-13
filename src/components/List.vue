@@ -1,6 +1,6 @@
 <template>
   <div id="listWrapper" class="list">
-    <div class="inputLoaderWrapper" v-show="isRefreshingList && currentPage === 1">
+    <div class="inputLoaderWrapper fixed" v-show="isRefreshingList && currentPage === 1">
       <div class="loader pacman">
         <div></div>
         <div></div>
@@ -95,7 +95,7 @@ export default {
           me.wordList = data.results.data
         }
         me.isRefreshingList = false
-        ez.scrollToTop()
+        // ez.scrollToTop()
         me.checkAllIn()
       }
 
@@ -120,7 +120,7 @@ export default {
       }
 
       // 尝试从 localStorage 获取数据，如果为空，发送 Ajax
-      let data = ez.localStorageMgr.get('[wl-p1]' + me.kw)
+      let data = ez.localStorageMgr.getJSON('[wl-p1]' + me.kw)
       if (data) {
         handleData(data)
       } else {
@@ -128,7 +128,7 @@ export default {
           .then(function (res) {
             var data = res.data
             if (res.status === 200 && data && data.results && data.results.data && data.results.total > -1) { // 数据正常
-              ez.localStorageMgr.set('[wl-p1]' + kw, data)
+              ez.localStorageMgr.setJSON('[wl-p1]' + kw, data)
               if (me.kw === kw) {
                 handleData(data)
               }
